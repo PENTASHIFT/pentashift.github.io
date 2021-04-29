@@ -26,8 +26,8 @@ class SparseMat {
 }
 
 var canv = document.getElementById("canv");
-canv.height = document.body.clientWidth;
-canv.width = document.body.clientHeight;
+canv.height = document.body.clientHeight;
+canv.width = document.body.clientWidth;
 var ctx = canv.getContext("2d");
 ctx.fillStyle = "#000";
 ctx.fillRect(0, 0, canv.width, canv.height);
@@ -55,38 +55,38 @@ function sleep(ms) {
 }
 
 async function generate() {
-    var max = 5;
-    var min = 1;
-    for (var i = 0; i < 100000; i++) {
-        let rand = Math.trunc(Math.random() * (max - min) + min);
-        switch(rand) {
-            case 1:
-                accum[0] = accum[0] + 1;
-                break;
-            case 2:
-                if (accum[0] == 0) {
+    while (true) {
+        var max = 5;
+        var min = 1;
+        for (var i = 0; i < 100000; i++) {
+            let rand = Math.trunc(Math.random() * (max - min) + min);
+            switch(rand) {
+                case 1:
+                    accum[0] = accum[0] + 1;
                     break;
-                }
-                accum[0] = accum[0] - 1;
-                break;
-            case 3:
-                accum[1] = accum[1] + 1;
-                break;
-            case 4:
-                accum[1] = accum[1] - 1;
-                break;
-            default:
-                break;
+                case 2:
+                    if (accum[0] == 0) {
+                        break;
+                    }
+                    accum[0] = accum[0] - 1;
+                    break;
+                case 3:
+                    accum[1] = accum[1] + 1;
+                    break;
+                case 4:
+                    accum[1] = accum[1] - 1;
+                    break;
+                default:
+                    break;
+            }
+            points.add([(origin[0] + accum[0]), (origin[1] + accum[1])]);
+            let color = points.access([(origin[0] + accum[0]), (origin[1] + accum[1])]);
+            ctx.fillStyle = layers[color - 1];
+            ctx.fillRect((origin[0] + accum[0]), (origin[1] + accum[1]), 2, 2);
+            ctx.fillRect((origin[0] - accum[0]), (origin[1] + accum[1]), 2, 2);
+            await sleep(5);
         }
-        points.add([(origin[0] + accum[0]), (origin[1] + accum[1])]);
-        let color = points.access([(origin[0] + accum[0]), (origin[1] + accum[1])]);
-        ctx.fillStyle = layers[color - 1];
-        ctx.fillRect((origin[0] + accum[0]), (origin[1] + accum[1]), 2, 2);
-        ctx.fillRect((origin[0] - accum[0]), (origin[1] + accum[1]), 2, 2);
-        await sleep(5);
     }
 }
 
-while (true) {
-    generate();
-}
+generate();
