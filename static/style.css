@@ -20,12 +20,12 @@ html, body {
     height: 30%;
     background-color: #2c001E;
     font-size: .8em;
+    position: absolute;
 }
 
 #cursor {
     display: none;
-    height: 1em;
-    width: .5em;
+    height: .6em;
     background: white;
     animation: 500ms ease infinite alternate blink;
 }

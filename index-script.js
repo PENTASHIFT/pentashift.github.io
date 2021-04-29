@@ -33,7 +33,7 @@ async function typing() {
             terminal.textContent = terminalText + description[pseudorn].slice(0, i);
         }
         terminal.textContent = terminalText + description[pseudorn] + " ";
-        cursor.style.display = "inline-block";
+        cursor.style.display = "inline";
         await sleep(4000);
         cursor.style.display = "none";
 
