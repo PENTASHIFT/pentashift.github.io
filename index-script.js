@@ -24,6 +24,7 @@ const description = [
 async function typing() {
     let terminal = document.getElementById("location");
     let terminalText = terminal.textContent;
+    let cursor = document.getElementById("cursor");
     while (true) {
         let i;
         let pseudorn = Math.floor(Math.random() * description.length);
@@ -31,14 +32,12 @@ async function typing() {
             await sleep(150);
             terminal.textContent = terminalText + description[pseudorn].slice(0, i);
         }
-        for (i = 0; i < 8; i++) {
-            if (i % 2) {
-                terminal.textContent = terminalText + description[pseudorn] + " ▮";
-            } else {
-                terminal.textContent = terminalText + description[pseudorn];
-            }
-            await sleep(200);
-        } for (i = description[pseudorn].length; i > 0; i--) {
+        terminal.textContent = terminalText + description[pseudorn] + " ";
+        cursor.style.display = "inline-block";
+        await sleep(4000);
+        cursor.style.display = "none";
+
+        for (i = description[pseudorn].length; i > 0; i--) {
             await sleep(100);
             terminal.textContent = terminalText + description[pseudorn].slice(0, i);
         }
