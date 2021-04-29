@@ -26,8 +26,8 @@ class SparseMat {
 }
 
 var canv = document.getElementById("canv");
-canv.height = document.width;
-canv.width = document.height;
+canv.height = document.body.clientWidth;
+canv.width = document.body.clientHeight;
 var ctx = canv.getContext("2d");
 ctx.fillStyle = "#000";
 ctx.fillRect(0, 0, canv.width, canv.height);
