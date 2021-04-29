@@ -28,14 +28,14 @@ async function typing() {
     while (true) {
         let i;
         let pseudorn = Math.floor(Math.random() * description.length);
-        for (i = 0; i < description[pseudorn].length; i++){
+        for (i = 0; i <= description[pseudorn].length; i++){
             await sleep(150);
             terminal.textContent = terminalText + description[pseudorn].slice(0, i);
         }
-        terminal.textContent = terminalText + description[pseudorn] + " ";
-        cursor.style.display = "inline";
+        //terminal.textContent = terminalText + description[pseudorn] + " ";
+        cursor.style.color = "white";
         await sleep(4000);
-        cursor.style.display = "none";
+        cursor.style.color = "#2c001E";
 
         for (i = description[pseudorn].length; i > 0; i--) {
             await sleep(100);
