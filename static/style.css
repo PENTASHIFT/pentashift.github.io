@@ -1,0 +1,92 @@
+html, body {
+    font-family: Tahoma, sans-serif;
+    margin: 0;
+    padding: 0;
+    font-weight: bold;
+    background-color: #eeeeee;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+/* Nav start */
+
+#nav {
+    background-color: #0d0d0d;
+    width: 100%;
+    position: fixed;
+    color: #eeeeee;
+    margin 0;
+    padding: 0;
+    overflow: hidden;
+    height: 6%;
+}
+
+#nav-left {
+    font-size: 1.8em;
+    font-family: 'Just Another Hand', sans-serif;
+    padding-left: 5%;
+    padding-top: 1%;
+    float: left;
+}
+
+#nav-right {
+    padding-right: 5%;
+    padding-top: 1%;
+    float: right; 
+}
+
+#navbar {
+    margin-top: 0.5em;
+    list-style-type: none;
+    width: 100%;
+}
+
+#navbar li {
+    text-decoration: none;
+    display: inline;
+    padding-right: 10%;
+}
+
+#navbar li:hover {
+    color: #a30000;
+}
+
+#navbar li a {
+    display: inline;
+    text-align: center;
+}
+
+#active {
+    color: #a30000;
+}
+
+/* Nav end */
+
+/* Footer start */
+
+#footer {
+    background-color: #0d0d0d;
+    width: 100%;
+    position: fixed;
+    color: #eeeeee;
+    bottom: 0;
+    left: 0;
+    height: 6%;
+    text-align: center;
+}
+
+#footer img {
+    padding: 1%;
+    height: 32px;
+    width: 32px;
+    vertical-align: center; 
+}
+
+#footer img:hover {
+    filter: opacity(70%);
+}
+
+/* Footer end */
