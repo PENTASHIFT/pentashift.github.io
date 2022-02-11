@@ -10,11 +10,11 @@ const description = [
     "a vim user.",
     "a pixel artist.",
     "a C programmer.",
-    "a game developer.",
+//    "a game developer.",
     "a writer.",
     "a college student.",
     "pretty good with Python.",
-    "a perl enthusiast", 
+    "a perl enthusiast.", 
 ];
 
 async function typing() {
