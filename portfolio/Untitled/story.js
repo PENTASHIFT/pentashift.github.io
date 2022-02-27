@@ -11,7 +11,9 @@ const storyData = {
                 `red`,
                 ` for each individual paragraph, as so. After entering your
                 desired input, press shift + enter to submit your decision. Try
-                it now to begin!`
+                it now to begin!`,
+                `Please note this is currently just a proof of concept with no
+                actual story. Story is coming soon.`
             ]
         },
 
