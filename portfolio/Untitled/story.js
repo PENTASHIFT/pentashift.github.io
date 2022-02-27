@@ -13,7 +13,7 @@ const storyData = {
                 desired input, press shift + enter to submit your decision. Try
                 it now to begin!`,
                 ` Please note this is currently just a proof of concept with no
-                actual story. Story is coming soon.`
+                actual story. Story is coming soon!`
             ]
         },
 
