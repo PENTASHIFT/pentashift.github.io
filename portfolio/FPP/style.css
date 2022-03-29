@@ -1,0 +1,33 @@
+:root {
+    background-color: black;
+    color: white;
+    text-align: center;
+    font-family: sans-serif;
+}
+
+h1 {
+    display: inline;
+}
+
+#opp-score {
+    margin-right: 500px;
+}
+
+#game-container {
+    text-align: center;
+    width: 100%;
+    padding-top: 5%;
+}
+
+.fpp {
+    border: 1px solid white;
+    display: inline;
+}
+
+#minimap {
+    height: 160px;
+    width: 160px;
+    margin-bottom: 160px; /* 480 - 240 - 80 */
+    margin-left: 20px;
+    display: inline;
+}
