@@ -1,6 +1,11 @@
 "use strict";
 
-// TODO(josh): Proper commenting and hoisting a lot of nonsense into their own functions.
+/*
+    Title: First-person Pong
+    Description: It's pong but in first-person.
+    Start-date: 03-10-2022
+    End-date: 3-29-2022.
+*/
 
 const DIRECTION = {
     IDLE: 0,
@@ -9,14 +14,13 @@ const DIRECTION = {
 };
 
 var Paddle = {
-    new: function(side) {
+    new: function() {
         return {
             width: 4,
             height: 16,
             halfHeight: 8,
-            x: side === "left" ? (this.pPosition) : 
-                (this.minimap.width - this.pPosition),
-            y: this.minimap.height >> 1,
+            x: 0,       // set in Game.initialgamestate().
+            y: 0,       // set in Game.initialgamestate().
             score: 0,
             move: DIRECTION.IDLE,
             speed: 2,
@@ -29,12 +33,80 @@ var Ball = {
         return {
             width: 4,
             height: 4,
-            x: this.minimap.width >> 1,
+            x: (this.minimap.width >> 1) - 2,
             y: this.minimap.height >> 1,
-            moveX: initialSpeed,
-            moveY: 0,
+            
+            // Velocity in pixels/frames.
+            delX: initialSpeed,
+            delY: 0,
         };
-    }
+    },
+
+    randomizeDel: function() {
+        // After a score, ball's direction needs to be randomized for added
+        //      challenge.
+
+        // Reset ball location.
+        this.ball.x = this.ball.y = this.minimap.width >> 1;
+        this.ball.x = this.ball.x - 2;
+
+        // Goes towards paddle who didn't score.
+        this.ball.delX = (this.ball.delX < 0) ? -1 : 1;
+        this.ball.delY = Math.floor(Math.random() * 3);
+
+        this.ball.delY = Math.floor((Math.random() * 2) == 0) ?
+            this.ball.delY : -this.ball.delY;
+    },
+
+    updateDel: function(paddle) {
+        // Specific velocity/direction depending where the ball hits the paddle.
+        switch(this.ball.y - paddle.y) {
+            case 9:
+            case 8:
+            case 7:
+                this.ball.delX = (this.ball.delX < 0) ? 1 : -1;
+                this.ball.delY = 2
+                break;
+
+            case 6:
+            case 5:
+            case 4:
+            case 3:
+                this.ball.delX = (this.ball.delX < 0) ? 1 : -1;
+                this.ball.delY = 1;
+                break;
+
+            case 2:
+            case 1:
+            case 0:
+            case -1:
+            case -2:
+                this.ball.delX = (this.ball.delX < 0) ? 2 : -2;
+                this.ball.delY = 0;
+                break;
+
+            case -3:
+            case -4:
+            case -5:
+            case -6:
+                this.ball.delX = (this.ball.delX < 0) ? 1 : -1;
+                this.ball.delY = -2;
+                break;
+
+            case -7:
+            case -8:
+            case -9:
+                this.ball.delX = (this.ball.delX < 0) ? 1 : -1;
+                this.ball.delY = -3;
+                break;
+
+            default:
+                // Sanity check?
+                this.ball.delX = (this.ball.delX < 0) ? 2 : -2;
+                this.ball.delY = 0;
+                break;
+        };
+    },
 };
 
 var Game = {
@@ -42,6 +114,9 @@ var Game = {
         this.canvas = document.getElementById("game");
         this.context = this.canvas.getContext("2d");
         this.canvas.focus();
+
+        this.opponentScoreId = document.getElementById("opp-score");
+        this.playerScoreId = document.getElementById("player-score");
 
         // Over-head traditional pong, minimap.
         this.minimap = document.getElementById("minimap");
@@ -67,12 +142,13 @@ var Game = {
         this.minimap.width = this.minimap.height = 160;
 
         // Game objects & their attributes.
-        this.pPosition = 16;    // Paddle padding from the edge.
-        this.player = Paddle.new.call(this, "right");
-        this.opponent = Paddle.new.call(this, "left");
-        this.ball = Ball.new.call(this, 1);
+        this.pPosition = 16;                             // Paddle padding from the edge.
+        this.player = Paddle.new();
+        this.opponent = Paddle.new();
+        this.ball = Ball.new.call(this, 2);
 
         // Key-codes
+        this.playKey = 32;              // Space key
         this.moveUpKeyZero = 68;        // 'd' key
         this.moveUpKeyOne = 39;         // Right Arrow
         this.moveDownKeyZero = 65;      // 'a' key
@@ -84,12 +160,18 @@ var Game = {
         this.menuDownKeyOne = 40;       // Down Arrow
 
         // Game attributes.
-        this.running = this.over = false;
-        this.playerScore = this.opponentScore = 0;
+        this.over = true;
+        this.running = false;
+        this.maxScore = 10;
 
         // Start-up game.
         this.initialGameState();
-        this.running = true;
+        this.draw();
+        this.overlay("FPP", 
+            (this.canvas.width / 2 - 110),
+            "Press space to begin!",
+            (this.canvas.width / 2 - 105));
+        //this.running = true;
         this.loop();
     },
 
@@ -98,47 +180,115 @@ var Game = {
         this.mmContext.clearRect(0, 0, this.minimap.width, this.minimap.height);
     },
 
-    initialGameState: function() {
-        // Decide whose serve it is.
-        this.ball.moveX = (Math.floor(Math.random() * 2) == 0) ?
-            this.ball.moveX : -this.ball.moveX;
+    overlay: function(header, xStart, msg, mxStart) {
+        // Slightly transparent background.
+        this.context.fillStyle = "rgba(0, 0, 0, 0.8)";
+        this.context.fillRect(0, 0, this.canvas.width, 
+            this.canvas.height);
 
-        this.ball.moveY = 1;
+        // Write message.
+        this.context.fillStyle = "#ffffff";
+        this.context.font = "Normal 100px Goldman";
+        this.context.fillText(header, xStart, this.canvas.height / 4);
+
+        this.context.font = "Normal 20px Goldman";
+        this.context.fillText(msg, mxStart, 3 * this.canvas.height / 4);
+        
+    },
+
+    initialGameState: function() {
+        // Decide whose serve it is. Said serve will be horizontal.
+        this.ball.delY = 0;
+        this.ball.delX = (Math.floor(Math.random() * 2) == 0) ?
+            this.ball.delX : -this.ball.delX;
+
+        // Set paddles in their starting position.
+        this.opponent.x = this.pPosition;
+        this.player.y = this.opponent.y = this.minimap.height >> 1;
+        this.player.x = this.minimap.width - this.pPosition;
+
     },
 
     keyHandler: function(key) {
+        // Handle key presses.
         if (this.running) {
             switch(key.keyCode) {
                 case this.moveUpKeyZero:
                 case this.moveUpKeyOne:
-                    game.player.move = DIRECTION.UP;
+                    this.player.move = DIRECTION.UP;
                     break;
                 case this.moveDownKeyZero:
                 case this.moveDownKeyOne:
-                    game.player.move = DIRECTION.DOWN;
+                    this.player.move = DIRECTION.DOWN;
                     break;
                 case this.menuKey:
                     // TODO(josh): Open menu here.
+                    this.overlay("Paused", 
+                        (this.canvas.width / 2 - 205),
+                        "Press esc to continue.",
+                        (this.canvas.width / 2 - 120));
                     this.running = false;
                     break;
                 default:
-                    console.log(key.keyCode);   // NOTE(josh): For debugging.
                     break;
             }
-        } else {
+        } else if (!this.over) {
             // Menu handling.
             if (key.keyCode == this.menuKey)
                 this.running = true;
+        } else {
+            if (key.keyCode == this.playKey) {
+                this.running = true;
+                this.over = false;
+
+                // Set scores.
+                this.player.score = this.opponent.score = 0;
+                this.updateScore();            
+            }
         }
     },
 
     movePlayer: function(paddle) {
         if (paddle.move === DIRECTION.UP) {
+            // Ensure player isn't going through walls.
+            // Subtract (paddle / 2) due to paddle.y being the center.
             if (!(paddle.y >= (this.minimap.height - paddle.halfHeight)))
                 paddle.y += paddle.speed;
         } else if (paddle.move === DIRECTION.DOWN) {
+            // Same here.
             if (!(paddle.y - paddle.halfHeight <= 0))
                 paddle.y -= paddle.speed;
+        }
+    },
+
+    updateScore: function() {
+        this.playerScoreId.textContent = (this.player.score == 10) ?
+            "You: " + this.player.score
+            : "You: 0" + this.player.score;
+
+        this.opponentScoreId.textContent = 
+            (this.opponent.score == 10) ?
+            "Opponent: " + this.opponent.score 
+            : "Opponent: 0" +  this.opponent.score;        
+
+        if (this.player.score == 10) {
+            this.initialGameState();
+            this.overlay("Winner!", 
+                (this.canvas.width / 2 - 203),
+                "Press space to play again.",
+                (this.canvas.width / 2 - 125));
+            this.over = true;
+            this.running = false;
+            return;
+        } else if (this.opponent.score == 10) {
+            this.initialGameState();
+            this.overlay("Loser!", 
+                (this.canvas.width / 2 - 168),
+                "Press space to play again.",
+                (this.canvas.width / 2 - 125));
+            this.over = true;
+            this.running = false;
+            return;
         }
     },
 
@@ -146,7 +296,7 @@ var Game = {
         // Update player location.
         this.movePlayer(this.player);
         
-        // Opponent "AI".
+        // Opponent "AI". Follow the ball around.
         if (this.ball.y > this.opponent.y)
             this.opponent.move = DIRECTION.UP;
         else if (this.ball.y < this.opponent.y)
@@ -161,37 +311,50 @@ var Game = {
             && Math.abs(this.ball.y - this.player.y) 
             <= this.player.halfHeight + 1) 
         {
-            this.ball.moveX = -this.ball.moveX;
+            // Ball/Player collision.
+            Ball.updateDel.call(this, this.player);
         } 
         else if (this.ball.x - 2 == this.opponent.x + 4 
                 && Math.abs(this.ball.y - this.opponent.y) 
                 <=  this.opponent.halfHeight + 1)
         {
-            this.ball.moveX = -this.ball.moveX;
+            // Ball/Opponent collision.
+            Ball.updateDel.call(this, this.opponent);
         }
 
-        if (this.ball.moveX > 0) {
+        if (this.ball.delX > 0) {
             if (this.ball.x + 2 < this.minimap.width)
-                this.ball.x = this.ball.x + this.ball.moveX;
-            else
-                this.ball.moveX = -this.ball.moveX;
-        } else if (this.ball.moveX < 0) {
+                this.ball.x = this.ball.x + this.ball.delX;
+            else {
+                // Opponent scores.
+                Ball.randomizeDel.call(this);
+
+                this.opponent.score += 1;
+                this.updateScore();
+            }
+        } else if (this.ball.delX < 0) {
             if (this.ball.x - 2 > 0)
-                this.ball.x = this.ball.x + this.ball.moveX
-            else
-                this.ball.moveX = -this.ball.moveX;
+                this.ball.x = this.ball.x + this.ball.delX
+            else {
+                // Player scores.
+                Ball.randomizeDel.call(this);
+
+                this.player.score += 1;
+                this.updateScore();
+            }
         }
 
-        if (this.ball.moveY > 0) {
+        // Bounce the ball off the upper and lower walls.
+        if (this.ball.delY > 0) {
             if (this.ball.y + 6 < this.minimap.height)
-                this.ball.y = this.ball.y + this.ball.moveY;
+                this.ball.y = this.ball.y + this.ball.delY;
             else
-                this.ball.moveY = -this.ball.moveY;
-        } else if (this.ball.moveY < 0) {
+                this.ball.delY = -this.ball.delY;
+        } else if (this.ball.delY < 0) {
             if (this.ball.y - 6 > 0) 
-                this.ball.y = this.ball.y + this.ball.moveY;
+                this.ball.y = this.ball.y + this.ball.delY;
             else
-                this.ball.moveY = -this.ball.moveY;
+                this.ball.delY = -this.ball.delY;
         }
 
     },
@@ -199,11 +362,13 @@ var Game = {
     cast: function() {
         // Raycasting fun.
 
+        // Camera will always be facing towards -x axis.
         const playerDir = {
             x: -1,
             y: 0,
         };
 
+        // 90 deg FOV.
         const camera = {
             x: 0,
             y: 0.9,
@@ -212,7 +377,13 @@ var Game = {
         const rayDirX = -1;      // Camera will always be facing towards -x axis.
         const deltaDistX = 1;
 
+        // wallEnd is hoisted outside of the loop so that we can reuse the same
+        // values to calculate the floor in the backmost walls.
         var wallEnd;
+        
+        // ballHeight only needs to be calculated once per frame due to it 
+        // being of constant height, hence this variable being hoisted outside
+        // of the loop.
         var ballHeight;
 
         for (let i = 0; i < this.canvas.width; i++) {
@@ -227,7 +398,7 @@ var Game = {
             let paddle;         // Is the paddle in this column
             let perpWallDist;
 
-            var side;
+            var side;           // x or y axis.
             var hit = 0;
 
             var mapX = this.player.x >> 2;
@@ -243,6 +414,7 @@ var Game = {
                 sideDistY = deltaDistY;
             }
 
+            // Loop until you hit a wall.
             while (hit == 0) {
                 if (sideDistX < sideDistY) {
                     sideDistX += deltaDistX;
@@ -253,18 +425,22 @@ var Game = {
                     mapY += stepY;
                     side = 1;
                 }
-
+    
+                // Did panel appear in this column?
                 if (mapY >= (this.opponent.y >> 2) - 2 
                         && mapY <= (this.opponent.y >> 2) + 2
                         && mapX == (this.opponent.x >> 2))
                    paddle = true; 
 
                 
+                // Did ball appear in this column?
                 if (mapY >= (this.ball.y >> 2) - 1
                         && mapY <= (this.ball.y >> 2) + 1
                         && mapX == (this.ball.x >> 2)) 
                 {
                     if (!ballHeight) {
+                        // This only really needs to be calculated once per
+                        //      frame due to the ball being constant sized.
                         let perpBallDist = (side == 0) ? (sideDistX - deltaDistX) :
                                         (sideDistY - deltaDistY);
                         ballHeight = Math.floor(this.canvas.height / perpBallDist);
@@ -275,6 +451,7 @@ var Game = {
                 } 
 
 
+                // Stop searching if we hit the wall behind opponent.
                 if (mapY >= 40 || mapY <= 0)
                     hit = 1;
                 else if (mapX <= 0)
@@ -282,6 +459,7 @@ var Game = {
             }
 
 
+            // Calculate wall height.
             perpWallDist = (side == 0) ? (sideDistX - deltaDistX) : 
                             (sideDistY - deltaDistY);
             let lineHeight = Math.floor(this.canvas.height / perpWallDist); 
@@ -291,6 +469,7 @@ var Game = {
             if (hit == 1) {
                let color;
 
+                // Shading for the wall depending on depth.
                 if (wallEnd > 255)
                     color = "#ee0000";
                 else if (wallEnd <= 255 && wallEnd > 225)
@@ -303,6 +482,7 @@ var Game = {
 
             let floor = wallEnd;
 
+            // Shading for the floor depending on depth.
             if (floor <= 225) {
                 let delta = (225 - floor)
                 this.drawLine(this.context, i, floor, i, floor + delta, "#000088");
@@ -317,16 +497,37 @@ var Game = {
 
             this.drawLine(this.context, i, floor, i, this.canvas.height, "#0000ee");
 
+            // Paddle is in this column.
             if (paddle) {
-                this.drawLine(this.context, i, (this.canvas.height >> 1) - 4, 
+                
+                // Crude Painter's Algorithm
+                if (ball && (this.ball.x < this.opponent.x)) {
+                    // Draw ball first.
+                    let ballStart = (this.canvas.height >> 1) - ballHeight;
+                    let ballEnd = (this.canvas.height >> 1) + ballHeight;
+                    this.drawLine(this.context, i, ballStart, i, ballEnd,
+                            "#880088");
+
+                    // Now paddle.
+                    this.drawLine(this.context, i, (this.canvas.height >> 1) - 4, 
                         i, (this.canvas.height >> 1) + 4, "#008800");
+
+                    continue;
+
+                } else {
+                    this.drawLine(this.context, i, (this.canvas.height >> 1) - 4, 
+                        i, (this.canvas.height >> 1) + 4, "#008800");
+                }
             }
 
+            // Ball is in this column.
             if (ball) {
                 let color;
 
                 let ballStart = (this.canvas.height >> 1) - ballHeight;
                 let ballEnd = (this.canvas.height >> 1) + ballHeight;
+
+                // Shading for the ball depending on depth.
                 if (ballEnd > 255)
                     color = "#ee00ee";
                 else if (ballEnd <= 255 && ballEnd > 225)
@@ -340,21 +541,26 @@ var Game = {
     },
 
     drawLine: function(context, x1, y1, x2, y2, color) {
-        // Raycasting helper function.
+        // Draw a line 1 pixel wide.
         context.beginPath();
         context.strokeStyle = color;
+
         // Lines are actually drawn on the pixel grid by default.
         // Therefore, I must add 0.5 to each x value.
         context.moveTo(x1 + 0.5, y1);
         context.lineTo(x2 + 0.5, y2);
+
         context.stroke();
         context.closePath();
     },
 
     draw: function() {
+        // Draw the entire frame.
         this.clear();
         
-        // TODO(josh): This should be conditional depending if it's turned on.
+        // TODO(josh): Minimap should be conditional depending if it's turned on
+        //              via a settings menu.
+
         // Draw minimap.
         this.mmContext.fillStyle = "#ffffff";
 
@@ -381,20 +587,24 @@ var Game = {
 
         // Draw dashed line in middle of mini-map.
         var halfWidth = this.minimap.width >> 1;
+
         for (let x = 2; (x + 6) < this.minimap.height; x += 10)
             this.drawLine(this.mmContext, halfWidth, x, 
                             halfWidth, (x + 6), "#ffffff");
 
-        // Actual 3D portion.
+        // Actual "3D" portion.
         this.cast();
 
     },
 
     loop: function() {
+        // Main game loop.
+
         if (game.running) {
-            game.updateState();
             game.draw();
+            game.updateState();
         }
+
         requestAnimationFrame(game.loop);
     },
 };

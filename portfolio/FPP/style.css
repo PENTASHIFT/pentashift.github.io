@@ -2,7 +2,7 @@
     background-color: black;
     color: white;
     text-align: center;
-    font-family: sans-serif;
+    font-family: 'Goldman', cursive;
 }
 
 h1 {
@@ -10,7 +10,7 @@ h1 {
 }
 
 #opp-score {
-    margin-right: 500px;
+    margin-right: 480px;
 }
 
 #game-container {
@@ -31,3 +31,4 @@ h1 {
     margin-left: 20px;
     display: inline;
 }
+

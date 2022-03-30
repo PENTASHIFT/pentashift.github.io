@@ -6,14 +6,28 @@
 
         <script src="fpp.js" defer></script> 
         <link rel="stylesheet" href="style.css">
+
+        <!-- Google font import. --> 
+        <link href=
+            "https://fonts.googleapis.com/css2?family=Goldman&family=Just+Another+Hand&display=swap"
+            rel="stylesheet"> 
+
     </head>
 
     <body>
-        <h1 id="opp-score">Opponent: 00</h1>
-        <h1 id="player-score">You: 00</h1>
+        <h1 id="opp-score"></h1>
+        <h1 id="player-score"></h1>
         <div id="game-container">
             <canvas class="fpp" id="game" tabindex="-1"></canvas>
             <canvas class="fpp" id="minimap"></canvas>
         </div>
+        <br>
+        <br>
+        <br>
+        <h3>
+            "A" or Left Arrow: Move paddle Left.<br><br>
+            "D" or Right Arrow: Move the paddle right.<br><br>
+            ESC: Pause the game.
+        </h3>
     </body>
 </html>
