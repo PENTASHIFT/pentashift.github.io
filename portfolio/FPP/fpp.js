@@ -609,8 +609,9 @@ var Game = {
     },
 };
 
+var game = Game;
+
 document.fonts.ready.then(() => {
-    var game = Game;
     game.initialize();
 });
 
