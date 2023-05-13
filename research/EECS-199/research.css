@@ -1,0 +1,66 @@
+body
+{
+    margin: 0;
+    padding: 0;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+}
+
+#left
+{
+    overflow: scroll;
+    display: inline-block;
+
+    margin: 0;
+    padding: 0;
+    width: 50vw;
+    height: 100vh;
+    background-color: black;
+}
+
+#chat-history
+{
+    margin: 0;
+    padding: 0;
+
+    color: white;
+    text-align: center;
+    font-size: 2vh;
+    
+    white-space: pre-line;
+}
+
+#user-input
+{
+    margin: 0;
+    padding: 0;
+    height: 3vh;
+    width: 50%;
+    outline: none;
+    border: none;
+
+    text-align: center;
+    font-size: 2vh;
+
+    position: absolute;
+    bottom: 0;
+}
+
+
+#right
+{
+    float: right;
+    display: inline-block;
+    overflow: scroll;
+
+    padding: 0;
+    width: 50vw;
+    height: 100vh;
+    background-color: #2a2727;
+    
+    text-align: center;
+    font-size: 2vh;
+
+    color: white;
+}
