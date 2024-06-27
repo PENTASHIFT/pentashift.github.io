@@ -2,6 +2,24 @@
 
 var data = [];
 
+const recent = document.querySelector(".recent-table");
+const cells = document.querySelector(".cells");
+const months = { 
+                    "01": "January",
+                    "02": "February",
+                    "03": "March",
+                    "04": "April",
+                    "05": "May",
+                    "06": "June",
+                    "07": "July",
+                    "08": "August",
+                    "09": "September",
+                    "10": "October",
+                    "11": "November",
+                    "12": "December"
+                };
+
+
 var req = fetch("https://www.painful.dev/logs.json", { method: "GET" }).then(
     function(response) { return response.json(); }
 ).then(
@@ -16,22 +34,6 @@ function fillTable()
     var now = new Date();
     var yearStart = new Date(new Date().getFullYear(), 0, 1);
     var yearEnd = new Date(new Date().getFullYear(), 11, 31);
-    const cells = document.querySelector(".cells");
-
-    const months = { 
-                        "01": "January",
-                        "02": "February",
-                        "03": "March",
-                        "04": "April",
-                        "05": "May",
-                        "06": "June",
-                        "07": "July",
-                        "08": "August",
-                        "09": "September",
-                        "10": "October",
-                        "11": "November",
-                        "12": "December"
-                    };
 
     for (; yearStart <= now; yearStart.setDate(yearStart.getDate() + 1))
     {
@@ -48,7 +50,6 @@ function fillTable()
     }
 
     const keys = Object.keys(data);
-    const recent = document.querySelector(".recent-table");
 
     for (var i = 0; i < 3;)
     {
