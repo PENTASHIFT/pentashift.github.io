@@ -2,7 +2,7 @@
 
 var data = [];
 
-var req = fetch("http://15.204.59.238/logs.json", { method: "GET" }).then(
+var req = fetch("https://15.204.59.238/logs.json", { method: "GET" }).then(
     function(response) { return response.json(); }
 ).then(
     function(json) {
