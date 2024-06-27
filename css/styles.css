@@ -523,6 +523,7 @@ progress {
   font-weight: 300;
   line-height: 1.2;
 }
+
 @media (min-width: 1200px) {
   .display-1 {
     font-size: 5rem;
@@ -702,6 +703,11 @@ progress {
   margin-right: calc(-0.5 * var(--bs-gutter-x));
   margin-left: calc(-0.5 * var(--bs-gutter-x));
 }
+
+.no-decoration {
+    text-decoration: none;
+}
+
 .row > * {
   flex-shrink: 0;
   width: 100%;
