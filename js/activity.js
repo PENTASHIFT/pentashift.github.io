@@ -31,6 +31,7 @@ var req = fetch("https://www.painful.dev/logs.json", { method: "GET" }).then(
 
 function fillTable()
 {
+    console.log(data);
     var now = new Date();
     var yearStart = new Date(new Date().getFullYear(), 0, 1);
     var yearEnd = new Date(new Date().getFullYear(), 11, 31);
@@ -53,18 +54,18 @@ function fillTable()
 
     for (var i = 0; i < 3;)
     {
-        for (var ii = 0; i < 3 && ii < data[keys[i]].length; ii++, i++)
+        for (var ii = 0; (ii + i) < 3 && ii < data[keys[i]].length; ii++)
         {
             const tags = `<tr class="recent-row">
                             <td>
-                                <a class="recent-link" href="${ data[keys[i]][0]["link"] }">
-                                    <image src="${ data[keys[i]][0]["img"] }
+                                <a class="recent-link" href="${ data[keys[i]][ii]["link"] }">
+                                    <image src="${ data[keys[i]][ii]["img"] }
                                         width="36" height="59">
                                 </a>
                             </td>
                             <td><i>
-                                <a class="recent-link" href="${ data[keys[i]][0]["link"] }">
-                                    ${ data[keys[i]][0]["title"] }
+                                <a class="recent-link" href="${ data[keys[i]][ii]["link"] }">
+                                    ${ data[keys[i]][ii]["title"] }
                                 </a>
                             </i></td>
                             <td>
@@ -74,6 +75,8 @@ function fillTable()
 
             recent.insertAdjacentHTML("beforeend", tags)
         }
+
+        i += data[keys[i]].length;
     }
 }
 
