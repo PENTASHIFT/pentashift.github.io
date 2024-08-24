@@ -31,7 +31,6 @@ var req = fetch("https://www.painful.dev/logs.json", { method: "GET" }).then(
 
 function fillTable()
 {
-    console.log(data);
     var now = new Date();
     var yearStart = new Date(new Date().getFullYear(), 0, 1);
     var yearEnd = new Date(new Date().getFullYear(), 11, 31);
